@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Editor / tool state
+.claude/
+
+# Dev artifacts (regeneratable)
+*.b64
+qr.png
+
+# Reference screenshot (not part of the deployed site)
+PS SOW MM.png
