@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option 2: Design Lead and Product Continuity — Memo Maker</title>
+  <style>
+    @font-face {
+      font-family: 'Neue Haas Grotesk Display';
+      src: local('Neue Haas Grotesk Display'), local('NeueHaasDisplay-Roman'), local('Neue Haas Grotesk Display Pro 55 Roman');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Neue Haas Grotesk Display';
+      src: local('Neue Haas Grotesk Display Bold'), local('NeueHaasDisplay-Bold'), local('Neue Haas Grotesk Display Pro 75 Bold');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Neue Haas Grotesk Text';
+      src: local('Neue Haas Grotesk Text'), local('NeueHaasText-Roman'), local('Neue Haas Grotesk Text Pro 55 Roman');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Neue Haas Grotesk Text';
+      src: local('Neue Haas Grotesk Text Bold'), local('NeueHaasText-Bold'), local('Neue Haas Grotesk Text Pro 75 Bold');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 72px;
+    }
+
+    body {
+      font-family: 'Neue Haas Grotesk Text', 'Neue Haas Grotesk Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      color: #1C0C5A;
+      background: #f4f3ef;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .animate {
+      opacity: 0;
+    }
+
+    .animate.visible {
+      animation: fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* ── Layout ── */
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 36px 32px 96px;
+    }
+
+    /* ── Top nav ── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(244, 243, 239, 0.92);
+      backdrop-filter: saturate(140%) blur(8px);
+      -webkit-backdrop-filter: saturate(140%) blur(8px);
+      border-bottom: 1px solid rgba(28, 12, 90, 0.08);
+    }
+
+    .topbar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .ps-logo {
+      height: 26px;
+      display: block;
+      opacity: 0;
+      animation: fadeIn 0.6s 0.1s ease forwards;
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .topnav a {
+      font-family: 'Neue Haas Grotesk Text', 'Helvetica Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.2px;
+      color: rgba(28, 12, 90, 0.65);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .topnav a:hover {
+      color: #1C0C5A;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding-bottom: 40px;
+    }
+
+    .uw-logo {
+      height: 104px;
+      margin-bottom: 22px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .hero-subtitle {
+      font-family: 'Neue Haas Grotesk Display', 'Helvetica Neue', sans-serif;
+      font-weight: 700;
+      font-size: 44px;
+      letter-spacing: 4px;
+      text-indent: 4px;
+      color: #5B88EF;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .hero-description {
+      font-size: 14px;
+      color: rgba(28, 12, 90, 0.6);
+      letter-spacing: 0.2px;
+      line-height: 1.45;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* ── Rule ── */
+    .rule {
+      height: 1px;
+      background: rgba(26, 26, 26, 0.12);
+      margin: 0;
+      border: 0;
+    }
+
+    /* ── Section styles ── */
+    .section {
+      padding: 56px 0 8px;
+    }
+
+    .section:last-of-type {
+      padding-bottom: 0;
+    }
+
+    .section-heading {
+      font-family: 'Neue Haas Grotesk Display', 'Helvetica Neue', sans-serif;
+      font-weight: 400;
+      font-size: 32px;
+      color: #1C0C5A;
+      margin-bottom: 22px;
+      line-height: 1.0;
+      letter-spacing: -0.2px;
+    }
+
+    .section p {
+      font-size: 14px;
+      line-height: 1.45;
+      color: #1C0C5A;
+      margin-bottom: 14px;
+    }
+
+    .section p:last-child {
+      margin-bottom: 0;
+    }
+
+    .section p a {
+      color: #5B88EF;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+      transition: color 0.2s ease;
+    }
+
+    .section p a:hover {
+      color: #1C0C5A;
+    }
+
+    /* ── Options ── */
+    .option {
+      margin-bottom: 22px;
+    }
+
+    .option:last-child {
+      margin-bottom: 0;
+    }
+
+    .option-label {
+      font-family: 'Neue Haas Grotesk Text', 'Helvetica Neue', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: #1C0C5A;
+      margin-bottom: 4px;
+      letter-spacing: 0.1px;
+    }
+
+    .option p {
+      margin-bottom: 0;
+    }
+
+    /* ── Q&A Section ── */
+    .qa-section {
+      padding: 56px 0 8px;
+    }
+
+    .qa-title {
+      font-family: 'Neue Haas Grotesk Display', 'Helvetica Neue', sans-serif;
+      font-size: 32px;
+      font-weight: 400;
+      color: #1C0C5A;
+      margin-bottom: 14px;
+      line-height: 1.0;
+      letter-spacing: -0.2px;
+    }
+
+    .qa-item {
+      border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+      overflow: hidden;
+    }
+
+    .qa-item:first-of-type {
+      border-top: 1px solid rgba(26, 26, 26, 0.1);
+    }
+
+    .qa-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .qa-question:hover {
+      color: #555;
+    }
+
+    .qa-question span {
+      font-size: 14px;
+      font-weight: 400;
+      color: inherit;
+      padding-right: 16px;
+    }
+
+    .qa-toggle {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      position: relative;
+    }
+
+    .qa-toggle::before,
+    .qa-toggle::after {
+      content: '';
+      position: absolute;
+      background: #8a8a8a;
+      border-radius: 1px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .qa-toggle::before {
+      width: 12px;
+      height: 1.25px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .qa-toggle::after {
+      width: 1.25px;
+      height: 12px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .qa-item.open .qa-toggle::after {
+      transform: translate(-50%, -50%) rotate(90deg);
+      opacity: 0;
+    }
+
+    .qa-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1), padding 0.4s ease;
+    }
+
+    .qa-item.open .qa-answer {
+      max-height: 320px;
+      padding-bottom: 20px;
+    }
+
+    .qa-answer p {
+      font-size: 13.5px;
+      line-height: 1.45;
+      color: rgba(28, 12, 90, 0.78);
+    }
+
+    .qa-item {
+      opacity: 0;
+    }
+
+    .qa-item.visible {
+      animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 72px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(26, 26, 26, 0.1);
+      text-align: center;
+      font-family: 'Neue Haas Grotesk Text', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(28, 12, 90, 0.55);
+    }
+
+    /* ── Detail page ── */
+    .back-link {
+      display: inline-block;
+      font-family: 'Neue Haas Grotesk Text', 'Helvetica Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.2px;
+      color: rgba(28, 12, 90, 0.65);
+      text-decoration: none;
+      margin-bottom: 32px;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+      color: #1C0C5A;
+    }
+
+    .page-title {
+      font-family: 'Neue Haas Grotesk Display', 'Helvetica Neue', sans-serif;
+      font-weight: 400;
+      font-size: 32px;
+      color: #1C0C5A;
+      line-height: 1.05;
+      letter-spacing: -0.2px;
+      margin-bottom: 14px;
+    }
+
+    .page-lede {
+      font-size: 14px;
+      color: rgba(28, 12, 90, 0.6);
+      letter-spacing: 0.2px;
+      line-height: 1.45;
+      font-style: italic;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .page {
+        padding: 28px 20px 72px;
+      }
+
+      .page-title {
+        font-size: 26px;
+      }
+
+      .page-lede {
+        font-size: 16px;
+      }
+
+      .uw-logo {
+        height: 80px;
+      }
+
+      .hero-subtitle {
+        font-size: 27px;
+        letter-spacing: 3px;
+        text-indent: 3px;
+      }
+
+      .section-heading, .qa-title {
+        font-size: 26px;
+      }
+
+      .section p,
+      .option-label,
+      .hero-description {
+        font-size: 16px;
+      }
+
+      .qa-question span {
+        font-size: 16px;
+      }
+
+      .qa-answer p {
+        font-size: 15.5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top nav -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <img src="data:image/png;base64,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" alt="Participant Systems" class="ps-logo">
+      <nav class="topnav">
+        <a href="index.html#what-it-is">What it is</a>
+        <a href="index.html#access">Access</a>
+        <a href="index.html#options">Options</a>
+        <a href="index.html#stack">Stack</a>
+        <a href="index.html#qa">Q&amp;A</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page">
+    <a href="index.html" class="back-link">← Back to overview</a>
+
+    <h1 class="page-title">Option 2: Design Lead and Product Continuity</h1>
+    <p class="page-lede">A detail page for the Memo Maker SOW.</p>
+
+    <hr class="rule" style="margin-top: 40px;">
+
+    <section class="section animate">
+      <h2 class="section-heading">What this is</h2>
+      <p>Upland takes the Memo Maker codebase out of Lovable and deploys it on infrastructure the studio owns. A senior engineer on the Upland side handles the port.</p>
+      <p>I lead Design and Product Continuity. The goal is to recreate the interface and, more importantly, make sure the rebuilt version preserves the logic, interaction model, and quality of what's already working end-to-end once it's live.</p>
+      <p><strong>$11,000 flat across a 6-week build.</strong></p>
+    </section>
+
+    <hr class="rule">
+
+    <section class="section animate">
+      <h2 class="section-heading">What's included</h2>
+      <p><strong>Week 1. Kickoff and handoff.</strong> A working session with the engineer walking through the app screen by screen. States, permissions, edge cases, and publishing behavior. Follow-up includes a written product brief covering core flows, the permission structure, and non-negotiables (row-level security at the database layer, signed URL expiry on image assets, dark mode parity, password gate behavior). Engineer receives read access to the Lovable project and the Supabase schema.</p>
+      <p><strong>Weeks 2 through 5. Build support.</strong> One hour-long session per week to review progress, answer questions, and keep decisions moving. Slack availability in between for real-time clarification as implementation unfolds. Ongoing staging review as screens come online, flagging anything that drifts from the original intent or introduces inconsistencies.</p>
+      <p>I'm the decision-maker for UX and product questions about how the existing system should behave. Engineering decisions stay with engineering.</p>
+      <p><strong>Week 6. QA and launch.</strong> Full walkthrough of the staging build. A focused punch list covering fidelity issues, spacing, copy, and interaction details. Final review and sign-off once the product reflects the intended experience.</p>
+    </section>
+
+    <hr class="rule">
+
+    <section class="section animate">
+      <h2 class="section-heading">What's not included</h2>
+      <p>Net-new module design. If the team wants functionality beyond what exists in the current prototype (video embeds, chart blocks, timeline components, or extensions to the memo section system), that's a separate scope. It's better to let the ported version run for a few weeks before deciding what's actually needed.</p>
+      <p>Also not included: post-launch bug fixes beyond two weeks, ongoing hosting or maintenance, or changes to the Supabase schema or authentication model.</p>
+    </section>
+
+    <hr class="rule">
+
+    <section class="section animate">
+      <h2 class="section-heading">How scope changes work</h2>
+      <p>If new requirements come up during the build, we pause and scope them as a change order. Nothing is absorbed into the flat fee without alignment first.</p>
+      <p>My role covers product and design decisions related to the existing system. Technical architecture decisions (stack choices, database changes, auth model) sit with engineering. Where the two overlap, we decide together.</p>
+    </section>
+
+    <hr class="rule">
+
+    <section class="section animate">
+      <h2 class="section-heading">What Upland provides</h2>
+      <p>A senior engineer with roughly 40 to 60 hours allocated to the port. Infrastructure for deployment. Access to the team for the kickoff walkthrough and any mid-build decisions that require input.</p>
+    </section>
+
+    <hr class="rule">
+
+    <section class="section animate">
+      <h2 class="section-heading">Timeline</h2>
+      <p>Six weeks from kickoff to launch. Flexible if the engineering timeline needs to adjust. The schedule assumes approximately 8 to 10 engineering hours per week and 5 to 8 hours per week on my side.</p>
+      <p>If the engineer can work faster, so can I. We will need to schedule a meeting to review the current build and talk details on process.</p>
+    </section>
+
+    <hr class="rule">
+
+    <section class="section animate">
+      <h2 class="section-heading">What happens after</h2>
+      <p>The studio owns the application and can run independently. I'm available for questions or minor adjustments in the first two weeks after launch at no additional cost.</p>
+      <p>If the team decides to extend the tool (new modules, workflows, or a more fully developed system), that can be scoped once the product has been in use and real needs are clear.</p>
+    </section>
+
+    <footer class="footer">Confidential · 2026</footer>
+
+  </div>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
